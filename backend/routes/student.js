@@ -33,6 +33,44 @@ router.post('/', requireFaculty, async (req, res) => {
   }
 });
 
+// Create or update student profile (for students)
+router.post('/profile', async (req, res) => {
+  try {
+    const token = req.headers['x-auth-token'];
+    if (!token) return res.status(401).json({ message: 'No token provided' });
+    
+    const User = require('../models/User');
+    const user = await User.findOne({ userId: token });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    
+    // Check if student already exists
+    let student = await Student.findOne({ userId: token });
+    
+    if (student) {
+      // Update existing student
+      Object.assign(student, req.body);
+      await student.save();
+      res.status(200).json(student);
+    } else {
+      // Create new student profile
+      const studentData = {
+        ...req.body,
+        userId: token,
+        enrollmentNumber: `EN${new Date().getFullYear()}${(await Student.countDocuments()) + 1}`,
+        status: 'Active'
+      };
+      
+      student = new Student(studentData);
+      await student.save();
+      res.status(201).json(student);
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // Get all students with filtering and pagination
 router.get('/', async (req, res) => {
   try {

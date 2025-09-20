@@ -13,7 +13,21 @@ router.post('/login', async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-    res.json({ message: 'Login successful', role: user.role });
+    
+    // Check if student has complete profile
+    let profileComplete = true;
+    if (user.role === 'student') {
+      const Student = require('../models/Student');
+      const student = await Student.findOne({ userId });
+      profileComplete = student && student.profileComplete;
+    }
+    
+    res.json({ 
+      message: 'Login successful', 
+      role: user.role,
+      userId: user.userId,
+      profileComplete: profileComplete
+    });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }

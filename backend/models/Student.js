@@ -12,11 +12,24 @@ const StudentSchema = new mongoose.Schema({
   
   // Academic Information
   department: { type: String, required: true },
+  branch: { type: String }, // New field for branch selection
   course: { type: String, required: true },
   semester: { type: Number, required: true },
   academicYear: { type: String, required: true },
   admissionDate: { type: Date, default: Date.now },
   enrollmentNumber: { type: String, unique: true },
+  
+  // Academic Performance
+  twelfthPercentage: { type: Number },
+  tenthPercentage: { type: Number },
+  
+  // Documents
+  aadharNumber: { type: String },
+  panNumber: { type: String },
+  
+  // User ID for profile completion
+  userId: { type: String, unique: true },
+  profileComplete: { type: Boolean, default: false },
   
   // Personal Information
   address: {
@@ -58,6 +71,7 @@ const StudentSchema = new mongoose.Schema({
   
   // Category and Reservation
   category: { type: String, enum: ['General', 'OBC', 'SC', 'ST', 'EWS', 'Other'], default: 'General' },
+  caste: { type: String, enum: ['General', 'OBC', 'SC', 'ST', 'EWS', 'NT', 'SBC'], default: 'General' },
   
   // Status and Documents
   status: { type: String, enum: ['Active', 'Inactive', 'Graduated', 'Suspended'], default: 'Active' },
